@@ -1,0 +1,112 @@
+﻿CREATE DATABASE QuanLyNhaHang
+GO
+
+USE QuanLyNhaHang
+GO
+
+CREATE TABLE TaiKhoan 
+(
+	userName VARCHAR(100) PRIMARY KEY,
+	passWord VARCHAR(1000) NOT NULL,
+	Role BIT DEFAULT 0 CHECK(Role = 0 OR Role = 1)
+)
+GO
+
+CREATE TABLE DanhMuc
+(
+	IDDanhMuc INT IDENTITY(1,1) PRIMARY KEY,
+	TenDanhMuc NVARCHAR(100) NOT NULL,
+	SoLuongMon INT NOT NULL DEFAULT 0
+)
+GO
+
+CREATE TABLE Mon
+(
+	IDMon INT IDENTITY(1,1) PRIMARY KEY,
+	TenMon NVARCHAR(100) NOT NULL,
+	IDDanhMuc INT  NOT NULL,
+	DonGia DECIMAL(6,3) NOT NULL CHECK(DonGia > 0),
+
+	FOREIGN KEY (IDDanhMuc) REFERENCES DanhMuc(IDDanhMuc)
+)
+GO
+
+CREATE TABLE Ban
+(
+	IDBan INT IDENTITY(1,1) PRIMARY KEY,
+	TenBan NVARCHAR(100) NOT NULL UNIQUE,
+	TrangThai NVARCHAR(50) NOT NULL CHECK(TrangThai = N'Trống' OR TrangThai = N'Có người') DEFAULT N'Trống'
+)
+GO
+
+CREATE TABLE HoaDon
+(
+	IDHoaDon INT IDENTITY(1,1) PRIMARY KEY,
+	Ngay DATE NOT NULL DEFAULT GETDATE(),
+	IDBan INT NOT NULL,
+
+	FOREIGN KEY (IDBan) REFERENCES Ban(IDBan)
+)
+GO
+
+CREATE TABLE ChiTietHoaDon
+(
+	IDHoaDon INT  NOT NULL,
+	IDMon INT NOT NULL,
+	SoLuong INT NOT NULL CHECK(SoLuong > 0),
+
+	CONSTRAINT PK_ChiTietHoaDon PRIMARY KEY (IDHoaDon, IDMon),
+	FOREIGN KEY (IDHoaDon) REFERENCES HoaDon(IDHoaDon),
+	FOREIGN KEY (IDMon) REFERENCES Mon(IDMon)
+)
+GO
+
+CREATE TRIGGER KiemTra_HoaDon_1 
+ON HoaDon FOR INSERT, UPDATE
+AS
+BEGIN
+	IF (SELECT COUNT(Ban.IDBan) FROM inserted INNER JOIN Ban ON inserted.IDBan = Ban.IDBan GROUP BY IDHoaDon) > 1
+		ROLLBACK TRAN
+END
+GO
+
+CREATE PROC USP_ThemHoaDon @idBan VARCHAR(10), @tenMon VARCHAR(10), @soLuong INT
+AS
+BEGIN
+
+	DECLARE @idHoaDon VARCHAR(10), @idMon VARCHAR(10)
+	SELECT @idMon = IDMon FROM Mon WHERE TenMon = @tenMon
+
+	IF ( (SELECT TrangThai FROM Ban WHERE IDBan = @idBan) = N'Có người' )
+	BEGIN
+		SELECT DISTINCT @idHoaDon = HoaDon.IDHoaDon FROM HoaDon INNER JOIN Ban ON HoaDon.IDBan = Ban.IDBan 
+		INNER JOIN ChiTietHoaDon CTHD ON HoaDon.IDHoaDon = CTHD.IDHoaDon WHERE Ban.IDBan = @idBan
+		INSERT INTO ChiTietHoaDon VALUES ('@idHoaDon', '@idMon', @soLuong)
+	END
+
+	ELSE
+	BEGIN
+		UPDATE Ban SET TrangThai = N'Có người' WHERE IDBan = @idBan
+		INSERT INTO HoaDon(IDBan)  VALUES('@idBan')
+		INSERT INTO ChiTietHoaDon VALUES ('@idHoaDon', '@idMon', @soLuong)
+	END
+
+END
+GO
+
+
+
+INSERT INTO TaiKhoan(userName, passWord) VALUES ('1', '1')
+GO
+INSERT INTO HoaDon(IDBan) VALUES ('B1')
+GO
+
+SELECT SUM(Mon.DonGia*CTHD.SoLuong) FROM Ban INNER JOIN HoaDon ON Ban.IDBan = HoaDon.IDBan 
+INNER JOIN ChiTietHoaDon CTHD ON HoaDon.IDHoaDon = CTHD.IDHoaDon
+INNER JOIN Mon ON CTHD.IDMon = Mon.IDMon WHERE Ban.IDBan = 'B1'
+GO
+
+SELECT DISTINCT HoaDon.IDHoaDon FROM HoaDon INNER JOIN Ban ON HoaDon.IDBan = Ban.IDBan 
+INNER JOIN ChiTietHoaDon CTHD ON HoaDon.IDHoaDon = CTHD.IDHoaDon WHERE Ban.IDBan = 'b1'
+GO
+
