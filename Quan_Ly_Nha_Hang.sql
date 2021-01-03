@@ -110,3 +110,4 @@ SELECT DISTINCT HoaDon.IDHoaDon FROM HoaDon INNER JOIN Ban ON HoaDon.IDBan = Ban
 INNER JOIN ChiTietHoaDon CTHD ON HoaDon.IDHoaDon = CTHD.IDHoaDon WHERE Ban.IDBan = 'b1'
 GO
 
+--Minh
