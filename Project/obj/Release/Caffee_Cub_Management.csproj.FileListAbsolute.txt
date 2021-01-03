@@ -1,0 +1,9 @@
+D:\Programming\Database\Caffee_Kteam\Caffee_Cub_Management\bin\Release\Caffee_Cub_Management.exe.config
+D:\Programming\Database\Caffee_Kteam\Caffee_Cub_Management\bin\Release\Caffee_Cub_Management.exe
+D:\Programming\Database\Caffee_Kteam\Caffee_Cub_Management\bin\Release\Caffee_Cub_Management.pdb
+D:\Programming\Database\Caffee_Kteam\Caffee_Cub_Management\obj\Release\Caffee_Cub_Management.fTableManager.resources
+D:\Programming\Database\Caffee_Kteam\Caffee_Cub_Management\obj\Release\Caffee_Cub_Management.Properties.Resources.resources
+D:\Programming\Database\Caffee_Kteam\Caffee_Cub_Management\obj\Release\Caffee_Cub_Management.csproj.GenerateResource.cache
+D:\Programming\Database\Caffee_Kteam\Caffee_Cub_Management\obj\Release\Caffee_Cub_Management.csproj.CoreCompileInputs.cache
+D:\Programming\Database\Caffee_Kteam\Caffee_Cub_Management\obj\Release\Caffee_Cub_Management.exe
+D:\Programming\Database\Caffee_Kteam\Caffee_Cub_Management\obj\Release\Caffee_Cub_Management.pdb
